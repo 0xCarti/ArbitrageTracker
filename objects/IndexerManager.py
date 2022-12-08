@@ -14,7 +14,7 @@ class IndexerManager:
             'binance': Binance(os.getenv('BINANCE_KEY'), os.getenv('BINANCE_SECRET')),
             'kraken': Kraken(),
             'gemini': Gemini(),
-            'cexio': CEXIO(),
+            'cexio': CEXIO(os.getenv('CEXIO_USERNAME'), os.getenv('CEXIO_KEY'), os.getenv('CEXIO_SECRET')),
             'bitfinex': Bitfinex()
         }
 
