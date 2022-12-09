@@ -1,5 +1,6 @@
 import threading
 import time
+
 from objects.IndexerManager import IndexerManager
 from objects.MarketManager import MarketManager
 from objects.Settings import Settings
@@ -9,8 +10,16 @@ from objects.TradeManager import TradeException, TradeManager
 pairs = []
 trades = []
 indexers = IndexerManager()
-markets = MarketManager()
 settings = Settings()
+markets = MarketManager()
+#markets.enable_markets('BTCUSD', 'BTCCAD', 'BTCEUR')
+#settings.set('price_thresh', 25.0)
+markets.enable_markets('ETHUSD', 'ETHCAD', 'ETHEUR')
+settings.set('price_thresh', 5.0)
+#markets.enable_markets('XMRUSD', 'XMRCAD', 'XMREUR')
+#markets.enable_markets('DOTUSD', 'DOTCAD', 'DOTEUR')
+#markets.enable_markets('SOLUSD', 'SOLCAD', 'SOLEUR')
+#markets.enable_markets('LTCUSD', 'LTCCAD', 'LTCEUR')
 threads = ThreadManager(settings)
 trader = TradeManager(indexers, settings, threads)
 
@@ -22,6 +31,7 @@ for buy_market in markets:
                     trade = trader.create_trade(buy_exchange, buy_market, sell_exchange, sell_market)
                 except TradeException as e:
                     pass
+
 
 print(f'Loaded {len(trader.trades)} trades into the trader.')
 print('Trades'.center(70, '-'))
