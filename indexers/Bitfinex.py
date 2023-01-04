@@ -1,18 +1,13 @@
-from bitfinex import Client
-from decimal import Decimal
-
-from requests import ReadTimeout
-
+import requests
 
 class Bitfinex:
     def __init__(self):
-        self.client = Client()
+        self.base_url = 'https://api-pub.bitfinex.com/v2/ticker/'
 
     def get_price(self, ticker: str):
-        try:
-            return Decimal(self.client.ticker(ticker.lower())['last_price'])
-        except ReadTimeout as e:
-            print(e)
+        request = requests.get(f'{self.base_url}t{ticker}')
+        return request.json()[6]
 
     def get_pairs(self):
         pass
+

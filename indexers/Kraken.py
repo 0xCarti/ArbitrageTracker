@@ -1,21 +1,18 @@
-import time
-from decimal import Decimal
-
-from krakipy import KrakenAPI, CallRateLimitError
+import requests
 
 
 class Kraken:
     def __init__(self):
-        self.client = KrakenAPI()
+        self.base_url = 'https://api.kraken.com/0/public/'
 
     def get_price(self, ticker: str):
-        try:
-            return Decimal(self.client.get_ticker_information(ticker).iloc[0].get('c')[0])
-        except ConnectionError as e:
-            print(e)
-        except CallRateLimitError:
-            time.sleep(5)
-            return self.get_price(ticker)
+        ticker = f'X{ticker[:3]}Z{ticker[3:]}'
+        if 'BTC' in ticker:
+            ticker = ticker.replace('BTC', 'XBT')
+        request = requests.get(f'{self.base_url}Ticker?pair={ticker}')
+        return request.json()['result'][ticker]['c'][0]
+
 
     def get_pairs(self):
-        return self.client.get_tradable_asset_pairs()['altname'].values
+        pass
+
