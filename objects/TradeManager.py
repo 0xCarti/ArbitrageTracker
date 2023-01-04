@@ -1,4 +1,7 @@
 from __future__ import annotations
+
+from decimal import Decimal
+
 from forex_python.converter import CurrencyRates
 from objects.IndexerManager import IndexerManager
 from objects.Settings import Settings
@@ -16,11 +19,12 @@ class TradeException(Exception):
 
 
 class Pair:
-    def __init__(self, exchange: str, ticker: str, price: float = 0.0):
+    def __init__(self, exchange: str, ticker: str, price: float = 0.0, fee_rate: float = 0.0):
         self.exchange = exchange
         self.ticker = ticker
         self.asset_one = ticker[:3]
         self.asset_two = ticker[3:]
+        self.fee_rate = Decimal(fee_rate)
 
     def reverse(self):
         copy_asset = self.asset_one
@@ -40,19 +44,26 @@ class Trade:
         self.sell_pair = sell_pair
         self.initial_currency = self.buy_pair.asset_two
         self.ending_currency = self.sell_pair.asset_two
+        self.buy_fee = 0
+        self.sell_fee = 0
         self.profit = 0.0
 
     def update_profit(self, indexer_manager: IndexerManager, rate_converter: CurrencyRates):
         buy_indexer = indexer_manager.get_indexer(self.buy_pair.exchange)
         buy_curr = self.buy_pair.asset_two
         buy_price = buy_indexer.get_price(self.buy_pair.ticker)
+        self.buy_fee = buy_indexer.get_price(self.buy_pair.ticker) * self.buy_pair.fee_rate
         sell_indexer = indexer_manager.get_indexer(self.sell_pair.exchange)
         sell_curr = self.sell_pair.asset_two
         sell_price = sell_indexer.get_price(self.sell_pair.ticker)
+        self.sell_fee = sell_indexer.get_price(self.sell_pair.ticker) * self.sell_pair.fee_rate
         if buy_curr != sell_curr:
             sell_price = rate_converter.convert(sell_curr, buy_curr, sell_price)
-        self.profit = sell_price - buy_price
+        self.profit = (sell_price - buy_price) - (self.buy_fee + self.sell_fee)
         return self.profit
+
+    def update_fee(self, ticker: str = ''):
+        return
 
     def reverse(self):
         return Trade(self.sell_pair, self.buy_pair)
@@ -61,8 +72,8 @@ class Trade:
         return f'{self.buy_pair.exchange}{self.buy_pair.ticker}{self.sell_pair.exchange}{self.sell_pair.ticker}'
 
     def __repr__(self):
-        buy_trade = f'[{self.buy_pair.exchange}, {self.buy_pair.ticker}]'.center(20, ' ')
-        sell_trade = f'[{self.sell_pair.exchange}, {self.sell_pair.ticker}]'.center(20, ' ')
+        buy_trade = f'[{self.buy_pair.exchange}, {self.buy_pair.ticker}, {self.buy_fee:.5f}]'.center(30, ' ')
+        sell_trade = f'[{self.sell_pair.exchange}, {self.sell_pair.ticker}, {self.sell_fee:.5f}]'.center(30, ' ')
         return f"{buy_trade} ---> {sell_trade}"
 
 
@@ -78,8 +89,10 @@ class TradeManager:
     def create_trade(self, buy_exchange: str, buy_asset: str, sell_exchange: str, sell_asset: str):
         if buy_exchange == sell_exchange and buy_asset == sell_asset:
             raise TradeException(f'Trade Failed - Same Pair')
-        buy_pair = Pair(buy_exchange, buy_asset)
-        sell_pair = Pair(sell_exchange, sell_asset)
+        buy_fee = self.indexer_manager.get_indexer(buy_exchange).get_fees(buy_asset)
+        buy_pair = Pair(buy_exchange, buy_asset, fee_rate=buy_fee)
+        sell_fee = self.indexer_manager.get_indexer(sell_exchange).get_fees(sell_asset)
+        sell_pair = Pair(sell_exchange, sell_asset, fee_rate=sell_fee)
         if buy_pair.asset_one == sell_pair.asset_one:
             trade = Trade(buy_pair, sell_pair)
             reverse_code = trade.reverse().code()

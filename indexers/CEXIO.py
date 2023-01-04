@@ -11,7 +11,10 @@ class CEXIO:
         self.client = cexio.Api(username, key, secret)
 
     def get_price(self, ticker: str):
-        return Decimal(self.client.ticker(f'{ticker[:3]}/{ticker[3:]}')['last'])
+        try:
+            return Decimal(self.client.ticker(f'{ticker[:3]}/{ticker[3:]}')['last'])
+        except KeyError:
+            print(f'{ticker} is not found on CEX.io')
 
-    def get_pairs(self):
-        pass
+    def get_fees(self, ticker: str = ''):
+        return 0.0025

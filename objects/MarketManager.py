@@ -1,77 +1,121 @@
 class MarketManager:
     def __init__(self):
-        self.enabled_markets = {'ETHUSD': [
+        self.enabled_markets = {}
+        self.all_markets = {
+            'ETHUSD': [
                 'binance',
                 'kraken',
                 # 'gemini',
                 'cexio',
                 'bitfinex',
-            ], 'ETHEUR': [
+            ],
+            'ETHEUR': [
                 'binance',
                 'kraken',
                 # 'gemini',
                 'cexio',
                 'bitfinex',
-            ], 'ETHCAD': [
-                'kraken',
-            ],}
-        self.all_markets = {'ETHUSD': [
-                'binance',
-                'kraken',
-                # 'gemini',
-                'cexio',
-                'bitfinex',
-            ], 'ETHEUR': [
-                'binance',
-                'kraken',
-                # 'gemini',
-                'cexio',
-                'bitfinex',
-            ], 'ETHCAD': [
+            ],
+            'ETHCAD': [
                 'kraken',
             ],
-                            'BTCUSD': [
+            'BTCUSD': [
+                'kraken',
+                # 'gemini',
+                'cexio',
+                'bitfinex',
+            ],
+            'BTCEUR': [
                 'binance',
                 'kraken',
                 # 'gemini',
                 'cexio',
                 'bitfinex',
-            ], 'BTCEUR': [
-                'binance',
-                'kraken',
-                # 'gemini',
-                'cexio',
-                'bitfinex',
-            ], 'BTCCAD': [
+            ],
+            'BTCCAD': [
                 'kraken',
             ],
-                            'LTCUSD': [
+            'LTCUSD': [
                 'binance',
                 'kraken',
                 # 'gemini',
                 'cexio',
                 'bitfinex',
-            ], 'LTCEUR': [
+            ],
+            'LTCEUR': [
                 'binance',
                 'kraken',
                 # 'gemini',
                 'cexio',
-            ], 'LTCCAD': [
+            ],
+            'LTCCAD': [
                 # 'kraken',
             ],
-                            'XRPUSD': [
+            'XRPUSD': [
                 'binance',
                 'kraken',
                 # 'gemini',
                 'cexio',
                 'bitfinex',
-            ], 'XRPEUR': [
+            ],
+            'XRPEUR': [
                 'binance',
                 'kraken',
                 # 'gemini',
                 'cexio',
-            ], 'XRPCAD': [
+            ],
+            'XRPCAD': [
                 'kraken',
+            ],
+            'SOLUSD': [
+                'binance',
+                'kraken',
+                # 'gemini',
+                'cexio',
+                'bitfinex',
+            ],
+            'SOLEUR': [
+                'binance',
+                'kraken',
+                # 'gemini',
+            ],
+            'MATICUSD': [
+                'binance',
+                'kraken',
+                # 'gemini',
+                'cexio',
+                'bitfinex',
+            ],
+            'MATICEUR': [
+                'binance',
+                'kraken',
+                # 'gemini',
+                'cexio',
+            ],
+            'MATICCAD': [
+                'kraken',
+            ],
+            'DOTUSD': [
+                'binance',
+                'kraken',
+                # 'gemini',
+                'cexio',
+                'bitfinex',
+            ],
+            'DOTEUR': [
+                'binance',
+                'kraken',
+                # 'gemini',
+            ],
+            'XMRUSD': [
+                'binance',
+                'kraken',
+                # 'gemini',
+                'bitfinex',
+            ],
+            'XMREUR': [
+                'kraken',
+                # 'gemini',
             ],}
 
     def enable_markets(self, *markets: str):
